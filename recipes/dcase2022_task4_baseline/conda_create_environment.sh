@@ -1,4 +1,4 @@
-conda create -y -n dcase2022 python==3.8.5
+conda create -y -n dcase2022 python=3.8.5
 source activate dcase2022
 
 conda install -y numba
