@@ -347,13 +347,13 @@ if __name__ == "__main__":
     with open(args.conf_file, "r") as f:
         configs = yaml.safe_load(f)
 
-    evaluation = False 
+    evaluation = False
     test_from_checkpoint = args.test_from_checkpoint
 
     if args.eval_from_checkpoint is not None:
         test_from_checkpoint = args.eval_from_checkpoint
         evaluation = True
-    
+
     test_model_state_dict = None
     if test_from_checkpoint is not None:
         checkpoint = torch.load(test_from_checkpoint)
@@ -367,7 +367,7 @@ if __name__ == "__main__":
 
     if evaluation:
         configs["training"]["batch_size_val"] = 1
-        
+
     seed = configs["training"]["seed"]
     if seed:
         torch.random.manual_seed(seed)
@@ -376,7 +376,7 @@ if __name__ == "__main__":
         pl.seed_everything(seed)
 
     test_only = test_from_checkpoint is not None
-    resample_data_generate_durations(configs["data"], test_only, evaluation)
+    # resample_data_generate_durations(configs["data"], test_only, evaluation)
     single_run(
         configs,
         args.log_dir,
