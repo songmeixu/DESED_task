@@ -36,7 +36,7 @@ def resample(audio, orig_fs, target_fs):
     for c in range(audio.shape[0]):
         tmp = audio[c].detach().cpu().numpy()
         if target_fs != orig_fs:
-            tmp = librosa.resample(tmp, orig_fs, target_fs)
+            tmp = librosa.resample(y=tmp, orig_sr=orig_fs, target_sr=target_fs)
         out.append(torch.from_numpy(tmp))
     out = torch.stack(out)
     return out
