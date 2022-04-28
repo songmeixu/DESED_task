@@ -76,7 +76,7 @@ def create_synth_dcase(synth_path, destination_folder):
         split_meta_folder = os.path.join(synth_path, "metadata", split_set, f"synthetic21_{split_set}")
         meta_files = glob.glob(os.path.join(split_meta_folder, "*.tsv"))
         for meta_file in meta_files:
-            
+
             create_folder(destination_folder)
             dest_file = os.path.join(
                 destination_folder, "metadata", split_set, f"synthetic21_{split_set}", os.path.basename(meta_file)
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         help="Output basefolder in which to put the created 2021 dataset (with real and soundscapes)",
     )
     parser.add_argument(
-        "--only_real", 
+        "--only_real",
         action="store_true",
         help="True if only the real part of the dataset need to be downloaded"
     )
@@ -133,17 +133,17 @@ if __name__ == "__main__":
 
     download_all = (only_real and only_synth and only_strong) or (not only_real and not only_synth and not only_strong)
     print(f"Download all: {download_all}")
-    
+
 
     # Default paths if not defined (using basedir)
     if dcase_dataset_folder is None:
         dcase_dataset_folder = os.path.join(bdir, "dcase", "dataset")
-        
+
     # #########
     # Download the different datasets if they do not exist
     # #########
 
-    # download real dataset 
+    # download real dataset
     if only_real or download_all:
         print('Downloading audioset dataset')
         missing_files = desed.download_audioset_data(dcase_dataset_folder, n_jobs=3, chunk_size=10)
@@ -177,7 +177,7 @@ if __name__ == "__main__":
 
 
     # download synthetic dataset
-    if only_synth or download_all:
+    if only_synth or download_all: 
         print(f"Downloading synthetic part of the dataset")
         url_synth = (
             "https://zenodo.org/record/6026841/files/dcase_synth.zip?download=1"
@@ -197,5 +197,3 @@ if __name__ == "__main__":
             f"desed.download_audioset_data('{dcase_dataset_folder}', n_jobs=3, chunk_size=10)\n\n"
             f"Please, send your missing_files_xx.tsv to the task organisers to get your missing files.\n"
         )
-        
-
