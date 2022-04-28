@@ -154,3 +154,9 @@ dmypy.json
 
 # Pycharm
 .idea
+
+# data
+data/
+tmp*/
+*logs/
+exp*/
