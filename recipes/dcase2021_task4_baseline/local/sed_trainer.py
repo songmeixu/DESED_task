@@ -419,9 +419,10 @@ class SEDTask4_2021(pl.LightningModule):
                 thresholds=list(self.val_buffer_teacher_synth.keys()),
             )
             for th in self.val_buffer_teacher_synth.keys():
-                self.val_buffer_teacher_synth[th] = self.val_buffer_teacher_synth[
-                    th
-                ].append(decoded_teacher_strong[th], ignore_index=True)
+                self.val_buffer_teacher_synth[th] = pd.concat(
+                    [self.val_buffer_teacher_synth[th],
+                    decoded_teacher_strong[th]],
+                    ignore_index=True)
 
         return
 
@@ -511,15 +512,15 @@ class SEDTask4_2021(pl.LightningModule):
             batch_indx: torch.Tensor, 1D tensor of indexes to know which data are present in each batch.
         Returns:
         """
-        
-        audio, labels, padded_indxs, filenames = batch        
-        
+
+        audio, labels, padded_indxs, filenames = batch
+
         # prediction for student
         mels = self.mel_spec(audio)
         strong_preds_student, weak_preds_student = self.detect(mels, self.sed_student)
         # prediction for teacher
         strong_preds_teacher, weak_preds_teacher = self.detect(mels, self.sed_teacher)
-        
+
         if not self.evaluation:
             loss_strong_student = self.supervised_loss(strong_preds_student, labels)
             loss_strong_teacher = self.supervised_loss(strong_preds_teacher, labels)
@@ -537,9 +538,9 @@ class SEDTask4_2021(pl.LightningModule):
         )
 
         for th in self.test_psds_buffer_student.keys():
-            self.test_psds_buffer_student[th] = self.test_psds_buffer_student[
-                th
-            ].append(decoded_student_strong[th], ignore_index=True)
+            self.test_psds_buffer_student[th] = pd.concat([
+                self.test_psds_buffer_student[th],
+                decoded_student_strong[th]], ignore_index=True)
 
         decoded_teacher_strong = batched_decode_preds(
             strong_preds_teacher,
@@ -550,11 +551,10 @@ class SEDTask4_2021(pl.LightningModule):
         )
 
         for th in self.test_psds_buffer_teacher.keys():
-            self.test_psds_buffer_teacher[th] = self.test_psds_buffer_teacher[
-                th
-            ].append(decoded_teacher_strong[th], ignore_index=True)
+            self.test_psds_buffer_teacher[th] = pd.concat([
+                self.test_psds_buffer_teacher[th],
+                decoded_teacher_strong[th]], ignore_index=True)
 
-        
         # compute f1 score
         decoded_student_strong = batched_decode_preds(
             strong_preds_student,
@@ -564,8 +564,9 @@ class SEDTask4_2021(pl.LightningModule):
             thresholds=[0.5],
         )
 
-        self.decoded_student_05_buffer = self.decoded_student_05_buffer.append(
-            decoded_student_strong[0.5]
+        self.decoded_student_05_buffer = pd.concat([
+            self.decoded_student_05_buffer,
+            decoded_student_strong[0.5]]
         )
 
         decoded_teacher_strong = batched_decode_preds(
@@ -576,8 +577,9 @@ class SEDTask4_2021(pl.LightningModule):
             thresholds=[0.5],
         )
 
-        self.decoded_teacher_05_buffer = self.decoded_teacher_05_buffer.append(
-            decoded_teacher_strong[0.5]
+        self.decoded_teacher_05_buffer = pd.concat([
+            self.decoded_teacher_05_buffer,
+            decoded_teacher_strong[0.5]]
         )
 
     def on_test_epoch_end(self):
@@ -587,7 +589,7 @@ class SEDTask4_2021(pl.LightningModule):
         except Exception as e:
             log_dir = self.hparams["log_dir"]
         save_dir = os.path.join(log_dir, "metrics_test")
-        
+
         if self.evaluation:
             # only save the predictions
             save_dir_student = os.path.join(save_dir, "student")
@@ -605,10 +607,10 @@ class SEDTask4_2021(pl.LightningModule):
                     index=False,
                 )
             print(f"\nPredictions for student saved in: {save_dir_student}")
-            
+
             save_dir_teacher = os.path.join(save_dir, "teacher")
             os.makedirs(save_dir_teacher, exist_ok=True)
-           
+
             self.decoded_teacher_05_buffer.to_csv(
                 os.path.join(save_dir_teacher, f"predictions_05_teacher.tsv"),
                 sep="\t",
