@@ -61,7 +61,10 @@ def resample_folder(in_dir, out_dir, target_fs=16000, regex="*.wav"):
 
     if compute:
         for f in tqdm.tqdm(files):
-            audio, orig_fs = torchaudio.load(f)
+            try:
+                audio, orig_fs = torchaudio.load(f)
+            except Exception:
+                continue
             audio = resample(audio, orig_fs, target_fs)
 
             os.makedirs(
