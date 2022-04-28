@@ -45,7 +45,7 @@ def batched_decode_preds(
             pred = encoder.decode_strong(pred)
             pred = pd.DataFrame(pred, columns=["event_label", "onset", "offset"])
             pred["filename"] = Path(filenames[j]).stem + ".wav"
-            prediction_dfs[c_th] = prediction_dfs[c_th].append(pred, ignore_index=True)
+            prediction_dfs[c_th] = pd.concat([prediction_dfs[c_th], pred], ignore_index=True)
 
     return prediction_dfs
 
@@ -165,11 +165,11 @@ def parse_jams(jams_list, encoder, out_json):
 def generate_tsv_wav_durations(audio_dir, out_tsv):
     """
         Generate a dataframe with filename and duration of the file
-    
+
     Args:
         audio_dir: str, the path of the folder where audio files are (used by glob.glob)
         out_tsv: str, the path of the output tsv file
-    
+
     Returns:
         pd.DataFrame: the dataframe containing filenames and durations
     """
