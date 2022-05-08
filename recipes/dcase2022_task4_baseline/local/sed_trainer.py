@@ -113,13 +113,13 @@ class SEDTask4(pl.LightningModule):
             raise NotImplementedError
 
         # for weak labels we simply compute f1 score
-        self.get_weak_student_f1_seg_macro = torchmetrics.classification.f_beta.F1(
+        self.get_weak_student_f1_seg_macro = torchmetrics.F1Score(
             len(self.encoder.labels),
             average="macro",
             compute_on_step=False,
         )
 
-        self.get_weak_teacher_f1_seg_macro = torchmetrics.classification.f_beta.F1(
+        self.get_weak_teacher_f1_seg_macro = torchmetrics.F1Score(
             len(self.encoder.labels),
             average="macro",
             compute_on_step=False,
@@ -608,7 +608,7 @@ class SEDTask4(pl.LightningModule):
     def on_test_epoch_end(self):
         # pub eval dataset
         save_dir = os.path.join(self.exp_dir, "metrics_test")
-        
+
         if self.evaluation:
             # only save the predictions
             save_dir_student = os.path.join(save_dir, "student")
@@ -807,5 +807,3 @@ class SEDTask4(pl.LightningModule):
                                                  output_dir=os.path.join(self.exp_dir,
                                                                          "devtest_codecarbon"))
             self.tracker_devtest.start()
-
-
