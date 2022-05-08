@@ -18,6 +18,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 from desed_task.dataio import ConcatDatasetBatchSampler
 from desed_task.dataio.datasets import StronglyAnnotatedSet, UnlabeledSet, WeakSet
 from desed_task.nnet.CRNN import CRNN
+from desed_task.nnet.CONFORMER import CNN_CONFORMER_BLOCK
 from desed_task.utils.encoder import ManyHotEncoder
 from desed_task.utils.schedulers import ExponentialWarmup
 
@@ -109,7 +110,8 @@ def single_run(
     test_dataset = devtest_dataset
 
     ##### model definition  ############
-    sed_student = CRNN(**config["net"])
+    # sed_student = CRNN(**config["net"])
+    sed_student = CNN_CONFORMER_BLOCK(**config["net"])
 
     if test_state_dict is None:
         ##### data prep train valid ##########
@@ -129,7 +131,7 @@ def single_run(
                 encoder,
                 pad_to=config["data"]["audio_max_len"],
             )
-        
+
 
         weak_df = pd.read_csv(config["data"]["weak_tsv"], sep="\t")
         train_weak_df = weak_df.sample(
@@ -299,19 +301,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("Training a SED system for DESED Task")
     parser.add_argument(
         "--conf_file",
-        default="./confs/default.yaml",
+        default="./confs/conformer.yaml",
         help="The configuration file with all the experiment parameters.",
     )
     parser.add_argument(
         "--log_dir",
-        default="./exp/2022_baseline",
+        default="./exp/2022_conformer",
         help="Directory where to save tensorboard logs, saved models, etc.",
     )
 
     parser.add_argument(
         "--strong_real",
         action="store_true",
-        default=False,
+        default=True,
         help="The strong annotations coming from Audioset will be included in the training phase.",
     )
     parser.add_argument(
