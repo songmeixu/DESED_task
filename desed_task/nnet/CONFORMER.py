@@ -162,6 +162,12 @@ class CNN_CONFORMER_BLOCK(nn.Module):
 
 
 class CONFORMER(nn.Module):
+    """
+    Compare to Class `CNN_CONFORMER_BLOCK`, the difference is
+    use `Conformer.ConformerEncoder` instead of the `Conformer.ConformerBlock`,
+    in which include `Conv2dSubampling` and `ConformerBlock`.
+    Thus, `self.cnn` is not needed here.
+    """
     def __init__(
         self,
         input_dim: int = 128,
@@ -262,6 +268,10 @@ class CONFORMER(nn.Module):
 
 
 class CONFORMER_AUDIO(nn.Module):
+    """
+    Compare to Class `CNN_CONFORMER_BLOCK`, the difference is
+    use `torchaudio.models.conformer` instead of the `Conformer.ConformerBlock`.
+    """
     def __init__(
         self,
         input_dim: int = 128,
