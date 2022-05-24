@@ -35,6 +35,7 @@ class CNN_CONFORMER_BLOCK(nn.Module):
         train_cnn=True,
         cnn_integration=False,
         freeze_bn=False,
+        sigmoid_temp: float = 1.0,
         **kwargs,
     ):
         """
@@ -86,6 +87,7 @@ class CNN_CONFORMER_BLOCK(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.dense = nn.Linear(encoder_dim, nclass)
         self.sigmoid = nn.Sigmoid()
+        self.sigoid_temp = sigmoid_temp
 
         if self.attention:
             self.dense_softmax = nn.Linear(encoder_dim, nclass)
@@ -134,7 +136,7 @@ class CNN_CONFORMER_BLOCK(nn.Module):
 
         x = self.dropout(x)
         strong = self.dense(x)  # [bs, frames, nclass]
-        strong = self.sigmoid(strong)
+        strong = self.sigmoid(strong / self.sigoid_temp)
         if self.attention:
             sof = self.dense_softmax(x)  # [bs, frames, nclass]
             if pad_mask is not None:

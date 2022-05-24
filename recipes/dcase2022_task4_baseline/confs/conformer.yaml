@@ -79,3 +79,4 @@ net:
   encoder_dim: 128 # dim of modules in conformer encoder (feedforward module etc.)
   n_conformer_blocks: 4 # number of Conformer layers to instantiate.
   conv_kernel_size: 31
+  sigmoid_temp: 1.5 # add temperature to sigmoid, the larger temperature, the softer logit results. 1 means original sigmoid.
